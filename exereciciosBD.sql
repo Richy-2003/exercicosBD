@@ -1,54 +1,160 @@
-CREATE DATABASE EmpresaDB
+CREATE DATABASE EmpresaDB;
 
-USE EmpresaDB
+USE EmpresaDB;
 
 CREATE TABLE Departamentos (
-Id INT PRIMARY KEY IDENTITY(1,1),
-Nome VARCHAR(200) UNIQUE NOT NULL,
-DataCriacao DATE)
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(100) NOT NULL UNIQUE,
+    DataCriacao DATE
+);
 
 CREATE TABLE Funcionarios (
-Id INT PRIMARY KEY IDENTITY(1,1),
-Nome VARCHAR(200) NOT NULL,
-Email VARCHAR(200) UNIQUE,
-Salario DECIMAL(8,2),
-DataAdimissao DATE,
-IdDepartamento INT NOT NULL
-CONSTRAINT FK_Func_Dep
-FOREIGN KEY (IdDepartamento)
-REFERENCES Departamentos (Id))
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(150) NOT NULL,
+    Email VARCHAR(150) UNIQUE,
+    Salario DECIMAL(10,2),
+    DataAdmissao DATE,
+    IdDepartamento INT NOT NULL,
+
+    CONSTRAINT FK_Funcionario_Departamento
+    FOREIGN KEY (IdDepartamento)
+    REFERENCES Departamentos(Id)
+);
 
 CREATE TABLE Projetos (
-Id INT PRIMARY KEY IDENTITY(1,1),
-Nome VARCHAR(200) NOT NULL,
-Orcamento DECIMAL(10,2),
-DataInicio DATE,
-DataFim DATE)
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(150) NOT NULL,
+    Orcamento DECIMAL(12,2),
+    DataInicio DATE,
+    DataFim DATE
+);
 
 CREATE TABLE FuncionariosProjetos (
-IdFuncionarioProjeto INT PRIMARY KEY IDENTITY(1,1),
-IdFuncionario INT,
-IdProjetos INT,
-DataEntrada DATE)
+    IdFuncionarioProjeto INT PRIMARY KEY AUTO_INCREMENT,
+    IdFuncionario INT NOT NULL,
+    IdProjeto INT NOT NULL,
+    DataEntrada DATE,
 
-INSERT INTO Departamentos (Id, Nome, DataCriacao)
-VALUES 
-	(TI, 01/01/2026),
-	(RH,15/03/2021),
-	(Financeiro, 10/07/2026);
+    CONSTRAINT FK_FP_Funcionario
+    FOREIGN KEY (IdFuncionario)
+    REFERENCES Funcionarios(Id),
 
-INSERT INTO Funcionarios (Id, Nome, Email, Salario, DataAdimissao, IdDepartamento)
-VALUES 
-	(Carlos Silva, carlos@empresa.com, 5000,00, 10/05/2022, TI),
-	(Ana Souza, ana@empresa.com, 7000,00, 20/08/2021, RH),
-	(Pedro Lima, pedro@empresa.com, 4500,00, Financeiro);
+    CONSTRAINT FK_FP_Projeto
+    FOREIGN KEY (IdProjeto)
+    REFERENCES Projetos(Id)
+);
 
-INSERT INTO Projetos (Nome, Orcamento, DataInicio, DataFim)
-VALUES 
-	(Sistemas ERP, 100,000,00, 01/10/2023, 31/12/2023),
-	(Recrutamento Digital, 50,000,00, 01/06/2023, 01/10/2023),
-	(Controle Financeiro, 75,000,00, 01/03/2023, 30/09/2023);
+INSERT INTO Departamentos
+(Nome, DataCriacao)
+VALUES
+('TI','2020-01-01'),
+('RH','2021-03-15'),
+('Financeiro','2019-07-10');
 
+INSERT INTO Funcionarios
+(Nome, Email, Salario, DataAdmissao, IdDepartamento)
+VALUES
+(
+'Carlos Silva',
+'carlos@empresa.com',
+5000.00,
+'2022-05-10',
+(SELECT Id FROM Departamentos WHERE Nome='TI')
+),
+
+(
+'Ana Souza',
+'ana@empresa.com',
+7000.00,
+'2021-08-20',
+(SELECT Id FROM Departamentos WHERE Nome='RH')
+),
+
+(
+'Pedro Lima',
+'pedro@empresa.com',
+4500.00,
+'2023-01-15',
+(SELECT Id FROM Departamentos WHERE Nome='Financeiro')
+);
+
+INSERT INTO Projetos
+(Nome, Orcamento, DataInicio, DataFim)
+VALUES
+(
+'Sistema ERP',
+100000.00,
+'2023-01-01',
+'2023-12-31'
+),
+
+(
+'Recrutamento Digital',
+50000.00,
+'2023-06-01',
+'2023-10-01'
+),
+
+(
+'Controle Financeiro',
+75000.00,
+'2023-03-01',
+'2023-09-30'
+);
+
+INSERT INTO FuncionariosProjetos
+(IdFuncionario, IdProjeto, DataEntrada)
+VALUES
+
+(
+(SELECT Id FROM Funcionarios
+WHERE Nome='Carlos Silva'),
+
+(SELECT Id FROM Projetos
+WHERE Nome='Sistema ERP'),
+
+CURRENT_DATE
+),
+
+(
+(SELECT Id FROM Funcionarios
+WHERE Nome='Carlos Silva'),
+
+(SELECT Id FROM Projetos
+WHERE Nome='Controle Financeiro'),
+
+CURRENT_DATE
+),
+
+(
+(SELECT Id FROM Funcionarios
+WHERE Nome='Ana Souza'),
+
+(SELECT Id FROM Projetos
+WHERE Nome='Recrutamento Digital'),
+
+CURRENT_DATE
+),
+
+(
+(SELECT Id FROM Funcionarios
+WHERE Nome='Pedro Lima'),
+
+(SELECT Id FROM Projetos
+WHERE Nome='Sistema ERP'),
+
+CURRENT_DATE
+),
+
+(
+(SELECT Id FROM Funcionarios
+WHERE Nome='Pedro Lima'),
+
+(SELECT Id FROM Projetos
+WHERE Nome='Controle Financeiro'),
+
+CURRENT_DATE
+);
 
 
 
