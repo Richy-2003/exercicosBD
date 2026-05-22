@@ -101,19 +101,3 @@ VALUES
 (2,2,GETDATE()),
 (3,1,GETDATE()),
 (3,3,GETDATE());
-
-SELECT
-f.Nome AS Funcionario,
-d.Nome AS Departamento,
-p.Nome AS Projeto
-
-FROM FuncionariosProjetos fp
-
-INNER JOIN Funcionarios f
-ON fp.IdFuncionario = f.Id
-
-INNER JOIN Departamentos d
-ON f.IdDepartamento = d.Id
-
-INNER JOIN Projetos p
-ON fp.IdProjeto = p.Id;
